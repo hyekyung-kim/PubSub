@@ -57,7 +57,10 @@ public class EventChannel {
 
     // sub: sub이 요청한 topic message 가져오기
     public void getMessages(String topic, Subscriber sub){
-
+        if(!pubTopics.contains(topic)){
+            System.out.println("Topic does not exist");
+            return;
+        }
         for(Message sendMessage: messageQueue) {
             // topic, sub이 일치하는 Message
             if (sendMessage.getTopic().equals(topic)) {
