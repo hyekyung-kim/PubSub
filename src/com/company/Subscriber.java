@@ -32,8 +32,8 @@ public class Subscriber {
         eventChannel.addSubscriber(topic, this);
     }
 
-    public void unSubscriber(String topic, EventChannel eventChannel){
-        eventChannel.unSubscriber(topic, this);
+    public void removeSubscriber(String topic, EventChannel eventChannel){
+        eventChannel.removeSubscriber(topic, this);
     }
 
     public void getMessages(String topic, EventChannel eventChannel){

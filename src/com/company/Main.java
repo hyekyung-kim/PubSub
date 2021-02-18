@@ -47,27 +47,23 @@ public class Main {
         System.out.println();
 
         int type;
-        do {
-            System.out.print("Input your type(1: Publisher | 2: Subscriber | -1: exit): ");
-            type = input.nextInt();
-            if (type == 1) {
-                pubRequest();
-            } else if (type == 2) {
-                subRequest();
-            } else if (type == -1) {
-                System.out.println("exit...\n");
-            } else {
-                System.out.println("Type does not exist");
-            }
-        }while(type != -1);
-
-//        Publisher newPub = new Publisher("newPub");
-//        pubMap.put(newPub.getTopic(), newPub);
-//
-//        // publish
-//        newPub.publish(new Message(newPub.getTopic(), "Can you Subscribe me?"), eventChannel);
-//        eventChannel.getAllMessages();
-//        printAll();
+        try{
+            do {
+                System.out.print("Input your type(1: Publisher | 2: Subscriber | -1: exit): ");
+                type = input.nextInt();
+                if (type == 1) {
+                    pubRequest();
+                } else if (type == 2) {
+                    subRequest();
+                } else if (type == -1) {
+                    System.out.println("exit...\n");
+                } else {
+                    System.out.println("Type does not exist");
+                }
+            } while (type != -1);
+        }catch(InputMismatchException e){
+            System.out.println("!!! InputMismatchException !!!");
+        }
     }
 
     public static void printAll() {
@@ -82,7 +78,7 @@ public class Main {
         }
     }
 
-    public static void pubRequest(){
+    public static void pubRequest() throws InputMismatchException{
         Scanner input = new Scanner(System.in);
 
         // publish
@@ -92,21 +88,21 @@ public class Main {
         input.nextLine();
 
         Publisher pub;
+        String contents;
         if (pubMap.containsKey(topic)) { // 기존 Publisher
             pub = pubMap.get(topic);
         } else {                         // 새로운 사람
             pub = new Publisher(topic);
-            pubMap.put(pub.getTopic(), pub);
-        }
 
-        System.out.print("Input contents: ");
-        String contents = input.nextLine();
-        pub.publish(new Message(topic, contents), eventChannel);
+            System.out.print("Input contents: ");
+            contents = input.nextLine();
+            pub.publish(new Message(topic, contents), eventChannel);
+        }
 
         pubMap.put(pub.getTopic(), pub);
 
         int check;
-        System.out.println("\nMENU (1: publish | 2: print my subscribers | 3: print all | 4: check messageQueue | -1: quit)\n");
+        System.out.println("\nMENU (1: publish | 2: print my subscribers | 3: print all | 4: check messageQueue | -1: quit)");
         do {
             System.out.print("\nwhat do you want? ");
             check = input.nextInt();
@@ -136,7 +132,7 @@ public class Main {
         } while (check != -1);
     }
 
-    public static void subRequest(){
+    public static void subRequest() throws InputMismatchException{
         Scanner input = new Scanner(System.in);
 
         // subscribe
@@ -155,7 +151,7 @@ public class Main {
         String topic;
         int check;
         System.out.println("\nMENU (1: subscribe | 2: unSubscribe | 3: get messages by topic |" +
-                "\n 4: get all messages | 5: print all | 6: check messageQueue | -1: quit)\n");
+                "\n 4: get all messages | 5: print all | 6: check messageQueue | -1: quit)");
         do {
             System.out.print("\nwhat do you want? ");
             check = input.nextInt();
@@ -168,7 +164,7 @@ public class Main {
             else if (check == 2) {
                 System.out.print("Input unSubscribe topic: ");
                 topic = input.next();
-                sub.unSubscriber(topic, eventChannel);
+                sub.removeSubscriber(topic, eventChannel);
             } // get messages by topic
             else if (check == 3) {
                 System.out.print("Input get topic: ");

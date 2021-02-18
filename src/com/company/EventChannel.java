@@ -27,13 +27,13 @@ public class EventChannel {
                 subscribers.add(sub);
                 pubsubMap.put(topic, subscribers);
             }else{                         // 존재하지 않는 topic
-                System.out.println("Topic doesn't exist");
+                System.out.println("Topic does not exist");
             }
         }
     }
 
     // sub: sub 삭제
-    public void unSubscriber(String topic, Subscriber sub){
+    public void removeSubscriber(String topic, Subscriber sub){
         // topic을 키로 갖는 set에서 sub제거
         if(pubsubMap.containsKey(topic)){
             Set<Subscriber> subscribers = pubsubMap.get(topic);
@@ -50,15 +50,19 @@ public class EventChannel {
         for(Message sendMessage: messageQueue) {
             // topic, sub이 일치하는 Message
             if (sendMessage.getTopic().equals(topic)) {
-                System.out.println("Message exist: " + sub.getName() + "'s request [ " + topic + " ]");
                 Set<Subscriber> students = pubsubMap.get(topic);
+                if(students == null || !students.contains(sub)){
+                    System.out.println("Message does not exist");
+                    continue;
+                }
 
                 for (Subscriber student : students) {
-                    // 구독중이 아니면 보내지 않음
+                    // 구독중이면 메시지 보냄
                     if (student.equals(sub)) {
+                        System.out.println("Message exist: " + sub.getName() + "'s request [ " + topic + " ]");
                         Set<Message> messages = student.getSubMessages();
                         messages.add(sendMessage);
-                        student.setSubMessages(messages);
+                        student.setSubMessages(messages); // sub 메시지 갱신
                     }
                 }
             }
@@ -69,7 +73,7 @@ public class EventChannel {
     public void getAllMessages(){
         System.out.println("Get all messages...");
         if(messageQueue.isEmpty()){
-            System.out.println("Message Queue is Empty\n");
+            System.out.println("Message Queue is Empty");
         }else{
             while(!messageQueue.isEmpty()) {
                 Message sendMessage = messageQueue.poll();
@@ -78,7 +82,7 @@ public class EventChannel {
                 Set<Subscriber> students = pubsubMap.get(professor);
 
                 if(students == null) {
-                    System.out.println("No subscribers\n");
+                    System.out.println("No subscribers");
                     break;
                 }
                 for(Subscriber student : students){
@@ -106,8 +110,9 @@ public class EventChannel {
         }
     }
 
+    // message queue 상태
     public void printMessageQueue(){
-        System.out.println("Queue Status");
+        System.out.println("[Queue Status]");
         for(Message m : messageQueue){
             System.out.println(m.getTopic() + ": " + m.getContents());
         }
