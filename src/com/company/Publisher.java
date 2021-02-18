@@ -17,5 +17,4 @@ public class Publisher {
     void publish(Message message, EventChannel eventChannel){
         eventChannel.addMessage(message);
     }
-
 }

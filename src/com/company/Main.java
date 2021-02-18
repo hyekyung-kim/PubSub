@@ -46,6 +46,45 @@ public class Main {
         printAll();
         System.out.println();
 
+        int type;
+        do {
+            System.out.print("Input your type(1: Publisher | 2: Subscriber | -1: exit): ");
+            type = input.nextInt();
+            if (type == 1) {
+                pubRequest();
+            } else if (type == 2) {
+                subRequest();
+            } else if (type == -1) {
+                System.out.println("exit...\n");
+            } else {
+                System.out.println("Type does not exist");
+            }
+        }while(type != -1);
+
+//        Publisher newPub = new Publisher("newPub");
+//        pubMap.put(newPub.getTopic(), newPub);
+//
+//        // publish
+//        newPub.publish(new Message(newPub.getTopic(), "Can you Subscribe me?"), eventChannel);
+//        eventChannel.getAllMessages();
+//        printAll();
+    }
+
+    public static void printAll() {
+        System.out.println("\n\t\t*** Subscribers ***");
+        for (Subscriber sub : subMap.values()) {
+            sub.printMessage();
+        }
+        System.out.println("------------------------------------");
+        System.out.println("\t\t*** Publishers ***");
+        for (String topic : pubMap.keySet()) {
+            eventChannel.printMap(topic);
+        }
+    }
+
+    public static void pubRequest(){
+        Scanner input = new Scanner(System.in);
+
         // publish
         System.out.println("You are PUBLISHER");
         System.out.print("Input your topic: ");
@@ -53,9 +92,9 @@ public class Main {
         input.nextLine();
 
         Publisher pub;
-        if(pubMap.containsKey(topic)) { // 기존 Publisher
+        if (pubMap.containsKey(topic)) { // 기존 Publisher
             pub = pubMap.get(topic);
-        }else{                         // 새로운 사람
+        } else {                         // 새로운 사람
             pub = new Publisher(topic);
             pubMap.put(pub.getTopic(), pub);
         }
@@ -68,33 +107,37 @@ public class Main {
 
         int check;
         System.out.println("\nMENU (1: publish | 2: print my subscribers | 3: print all | 4: check messageQueue | -1: quit)\n");
-        do{
+        do {
             System.out.print("\nwhat do you want? ");
             check = input.nextInt();
             input.nextLine();
 
-            if(check == 1) {
+            if (check == 1) {
                 System.out.print("Input contents: ");
                 contents = input.nextLine();
                 pub.publish(new Message(topic, contents), eventChannel);
             } // 구독자 출력
-            else if(check == 2){
+            else if (check == 2) {
                 eventChannel.printMap(pub.getTopic());
             } // 전체 출력
-            else if(check == 3){
+            else if (check == 3) {
                 printAll();
             } // messageQueue 상태
-            else if(check == 4){
+            else if (check == 4) {
                 eventChannel.printMessageQueue();
             } // 종료
-            else if(check == -1){
+            else if (check == -1) {
                 System.out.println("exit...\n");
             } // 예외
-            else{
+            else {
                 System.out.println("Command not found.\n");
             }
 
-        } while(check != -1);
+        } while (check != -1);
+    }
+
+    public static void subRequest(){
+        Scanner input = new Scanner(System.in);
 
         // subscribe
         System.out.println("You are SUBSCRIBER");
@@ -102,71 +145,52 @@ public class Main {
         String name = input.next();
 
         Subscriber sub;
-        if(subMap.containsKey(name)) { // 기존 subscriber
+        if (subMap.containsKey(name)) { // 기존 subscriber
             sub = subMap.get(name);
-        }else{                         // 새로운 사람
+        } else {                         // 새로운 사람
             sub = new Subscriber(name);
             subMap.put(sub.getName(), sub);
         }
 
+        String topic;
+        int check;
         System.out.println("\nMENU (1: subscribe | 2: unSubscribe | 3: get messages by topic |" +
                 "\n 4: get all messages | 5: print all | 6: check messageQueue | -1: quit)\n");
-        do{
+        do {
             System.out.print("\nwhat do you want? ");
             check = input.nextInt();
 
-            if(check == 1) {
+            if (check == 1) {
                 System.out.print("Input subscribe topic: ");
                 topic = input.next();
                 sub.addSubscriber(topic, eventChannel);
             } // unsubscribe
-            else if(check == 2){
+            else if (check == 2) {
                 System.out.print("Input unSubscribe topic: ");
                 topic = input.next();
                 sub.unSubscriber(topic, eventChannel);
             } // get messages by topic
-            else if(check == 3){
+            else if (check == 3) {
                 System.out.print("Input get topic: ");
                 topic = input.next();
                 sub.getMessages(topic, eventChannel);
             } // get all messages
-            else if(check == 4){
+            else if (check == 4) {
                 eventChannel.getAllMessages();
             } // 전체 출력
-            else if(check == 5){
+            else if (check == 5) {
                 printAll();
             } // messageQueue 상태
-            else if(check == 6){
+            else if (check == 6) {
                 eventChannel.printMessageQueue();
             } // 종료
-            else if(check == -1){
+            else if (check == -1) {
                 System.out.println("exit...\n");
             } // 예외
-            else{
+            else {
                 System.out.println("Command not found.\n");
             }
 
-        } while(check != -1);
-
-        Publisher newPub = new Publisher("newPub");
-        pubMap.put(newPub.getTopic(), newPub);;
-
-        // publish
-        newPub.publish(new Message(newPub.getTopic(), "Can you Subscribe me?"), eventChannel);
-        eventChannel.getAllMessages();
-        printAll();
-
-    }
-
-    public static void printAll(){
-        System.out.println("\n\t\t*** Subscribers ***");
-        for(Subscriber sub : subMap.values()){
-            sub.printMessage();
-        }
-        System.out.println("------------------------------------");
-        System.out.println("\t\t*** Publishers ***");
-        for(String topic : pubMap.keySet()){
-            eventChannel.printMap(topic);
-        }
+        } while (check != -1);
     }
 }

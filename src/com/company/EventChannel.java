@@ -5,10 +5,12 @@ import java.util.*;
 public class EventChannel {
     private final Queue<Message> messageQueue = new LinkedList<>();
     private final Map<String, Set<Subscriber>> pubsubMap = new HashMap<>();
+    private final Set<String> pubTopics = new HashSet<>();
 
     // pub: message 추가
     public void addMessage(Message message){
         messageQueue.add(message);
+        pubTopics.add(message.getTopic());
     }
 
     // sub: sub 추가
@@ -18,12 +20,16 @@ public class EventChannel {
         if(pubsubMap.containsKey(topic)){  // 존재하는 topic
             subscribers = pubsubMap.get(topic);
             subscribers.add(sub);
-            pubsubMap.put(topic, subscribers); // update
-        }else{                             // 새로운 topic
+            pubsubMap.put(topic, subscribers);
+        }else {                            // 새로운 topic
             subscribers = new HashSet<>();
+            if(pubTopics.contains(topic)){ // 구독 요청한 topic 존재
+                subscribers.add(sub);
+                pubsubMap.put(topic, subscribers);
+            }else{                         // 존재하지 않는 topic
+                System.out.println("Topic doesn't exist");
+            }
         }
-        subscribers.add(sub);
-        pubsubMap.put(topic, subscribers); // update
     }
 
     // sub: sub 삭제
