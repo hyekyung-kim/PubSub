@@ -3,9 +3,9 @@ package com.company;
 import java.util.*;
 
 public class EventChannel {
-    private final Queue<Message> messageQueue = new LinkedList<>();
-    private final Map<String, Set<Subscriber>> pubsubMap = new HashMap<>();
-    private final Set<String> pubTopics = new HashSet<>();
+    private static final Queue<Message> messageQueue = new LinkedList<>();
+    private static final Map<String, Set<Subscriber>> pubsubMap = new HashMap<>();
+    private static final Set<String> pubTopics = new HashSet<>();
 
     // pub: message 추가
     public void addMessage(Message message){
@@ -17,15 +17,21 @@ public class EventChannel {
     public void addSubscriber(String topic, Subscriber sub){
         Set<Subscriber> subscribers;
 
-        if(pubsubMap.containsKey(topic)){  // 존재하는 topic
+        if(pubsubMap.containsKey(topic)){   // 존재하는 topic
             subscribers = pubsubMap.get(topic);
-            subscribers.add(sub);
-            pubsubMap.put(topic, subscribers);
-        }else {                            // 새로운 topic
-            subscribers = new HashSet<>();
-            if(pubTopics.contains(topic)){ // 구독 요청한 topic 존재
+            if(subscribers.contains(sub)){  // 이미 구독중
+                System.out.println("You already subscribe this topic");
+            }else {                         // 구독 성공
                 subscribers.add(sub);
                 pubsubMap.put(topic, subscribers);
+                System.out.println("Subscribe " + topic);
+            }
+        }else {                            // 새로운 topic
+            subscribers = new HashSet<>();
+            if(pubTopics.contains(topic)){ // topic 존재
+                subscribers.add(sub);
+                pubsubMap.put(topic, subscribers);
+                System.out.println("Subscribe " + topic);
             }else{                         // 존재하지 않는 topic
                 System.out.println("Topic does not exist");
             }
@@ -37,10 +43,15 @@ public class EventChannel {
         // topic을 키로 갖는 set에서 sub제거
         if(pubsubMap.containsKey(topic)){
             Set<Subscriber> subscribers = pubsubMap.get(topic);
-            subscribers.remove(sub);
-            pubsubMap.put(topic, subscribers);
+            if(subscribers.contains(sub)) { // 구독취소
+                subscribers.remove(sub);
+                pubsubMap.put(topic, subscribers);
+                System.out.println("Unsubscribe " + topic);
+            }else{
+                System.out.println("You are NOT subscriber");
+            }
         }else{
-            System.out.println("You are NOT subscriber");
+            System.out.println("Topic does not exist");
         }
     }
 
@@ -59,10 +70,10 @@ public class EventChannel {
                 for (Subscriber student : students) {
                     // 구독중이면 메시지 보냄
                     if (student.equals(sub)) {
-                        System.out.println("Message exist: " + sub.getName() + "'s request [ " + topic + " ]");
                         Set<Message> messages = student.getSubMessages();
                         messages.add(sendMessage);
                         student.setSubMessages(messages); // sub 메시지 갱신
+                        System.out.println("Message exist: " + sub.getName() + "'s request [ " + topic + " ]");
                     }
                 }
             }
