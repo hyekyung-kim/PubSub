@@ -64,18 +64,18 @@ public class EventChannel {
         for(Message sendMessage: messageQueue) {
             // topic, sub이 일치하는 Message
             if (sendMessage.getTopic().equals(topic)) {
-                Set<Subscriber> students = pubsubMap.get(topic);
-                if(students == null || !students.contains(sub)){
+                Set<Subscriber> subscribers = pubsubMap.get(topic);
+                if(subscribers == null || !subscribers.contains(sub)){
                     System.out.println("Message does not exist");
                     continue;
                 }
 
-                for (Subscriber student : students) {
+                for (Subscriber subscriber : subscribers) {
                     // 구독중이면 메시지 보냄
-                    if (student.equals(sub)) {
-                        Set<Message> messages = student.getSubMessages();
+                    if (subscriber.equals(sub)) {
+                        Set<Message> messages = subscriber.getSubMessages();
                         messages.add(sendMessage);
-                        student.setSubMessages(messages); // sub 메시지 갱신
+                        subscriber.setSubMessages(messages); // sub 메시지 갱신
                         System.out.println("Message exist: " + sub.getName() + "'s request [ " + topic + " ]");
                     }
                 }
@@ -91,18 +91,18 @@ public class EventChannel {
         }else{
             while(!messageQueue.isEmpty()) {
                 Message sendMessage = messageQueue.poll();
-                String professor = sendMessage.getTopic();
+                String topic = sendMessage.getTopic();
 
-                Set<Subscriber> students = pubsubMap.get(professor);
+                Set<Subscriber> subscribers = pubsubMap.get(topic);
 
-                if(students == null) {
+                if(subscribers == null) {
                     System.out.println("No subscribers");
                     break;
                 }
-                for(Subscriber student : students){
-                    Set<Message> messages = student.getSubMessages();
+                for(Subscriber subscriber : subscribers){
+                    Set<Message> messages = subscriber.getSubMessages();
                     messages.add(sendMessage);
-                    student.setSubMessages(messages);
+                    subscriber.setSubMessages(messages);
                 }
             }
         }
