@@ -17,7 +17,7 @@ public class EventChannel {
     public void addSubscriber(String topic, Subscriber sub){
         Set<Subscriber> subscribers;
 
-        if(pubsubMap.containsKey(topic)){   // 존재하는 topic
+        if(pubsubMap.containsKey(topic)){   // 구독자 존재
             subscribers = pubsubMap.get(topic);
             if(subscribers.contains(sub)){  // 이미 구독중
                 System.out.println("You already subscribe this topic");
@@ -26,21 +26,21 @@ public class EventChannel {
                 pubsubMap.put(topic, subscribers);
                 System.out.println("Subscribe " + topic);
             }
-        }else {                            // 새로운 topic
-            subscribers = new HashSet<>();
-            if(pubTopics.contains(topic)){ // topic 존재
+        }else {                             // 첫 구독
+            if(!pubTopics.contains(topic)){ // 존재하지 않는 topic
+                System.out.println("Topic does not exist");
+            }else{                          // 구독 성공
+                subscribers = new HashSet<>();
                 subscribers.add(sub);
                 pubsubMap.put(topic, subscribers);
                 System.out.println("Subscribe " + topic);
-            }else{                         // 존재하지 않는 topic
-                System.out.println("Topic does not exist");
             }
         }
     }
 
     // sub: sub 삭제
     public void removeSubscriber(String topic, Subscriber sub){
-        // topic을 키로 갖는 set에서 sub제거
+        // topic을 키로 갖는 sub set에서 sub제거
         if(pubsubMap.containsKey(topic)){
             Set<Subscriber> subscribers = pubsubMap.get(topic);
             if(subscribers.contains(sub)) { // 구독취소
@@ -104,7 +104,6 @@ public class EventChannel {
                     messages.add(sendMessage);
                     student.setSubMessages(messages);
                 }
-
             }
         }
     }
@@ -117,7 +116,7 @@ public class EventChannel {
         if(tmp == null || tmp.isEmpty()) {
             System.out.println("!!! No Subscribers !!!");
         }else{
-            for(Subscriber s: tmp){
+            for (Subscriber s : tmp) {
                 System.out.print(s.name + " / ");
             }
             System.out.println();
@@ -127,7 +126,8 @@ public class EventChannel {
     // message queue 상태
     public void printMessageQueue(){
         System.out.println("[Queue Status]");
-        for(Message m : messageQueue){
+
+        for (Message m : messageQueue) {
             System.out.println(m.getTopic() + ": " + m.getContents());
         }
     }
