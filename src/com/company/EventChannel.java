@@ -97,7 +97,7 @@ public class EventChannel {
 
                 if(subscribers == null) {
                     System.out.println("No subscribers");
-                    break;
+                    continue;
                 }
                 for(Subscriber subscriber : subscribers){
                     Set<Message> messages = subscriber.getSubMessages();
